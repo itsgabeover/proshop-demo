@@ -1,4 +1,3 @@
-import { get } from "mongoose";
 import asyncHandler from "../middleware/asyncHandler.js";
 import Product from "../models/productModel.js";
 
