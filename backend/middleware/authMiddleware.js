@@ -4,38 +4,37 @@ import User from "../models/userModel.js";
 
 // Protect routes
 const protect = asyncHandler(async (req, res, next) => {
-    let token;
+  let token;
 
-    //Read the JWT token from the header
-    token = req.cookies.jwt
+  //Read the JWT token from the header
+  token = req.cookies.jwt;
 
-    if (token){
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            req.user = await User.findById(decoded.userId).select('-password');
-            next();
-        } catch (error) {
-            console.log(error);
-            res.status(401);
-            throw new Error("Not authorized, token failed");
-        }
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    } else {
-        res.status(401);
-        throw new Error("Not authorized, no token");
+      req.user = await User.findById(decoded.userId).select("-password");
+      next();
+    } catch (error) {
+      console.log(error);
+      res.status(401);
+      throw new Error("Not authorized, token failed");
     }
+  } else {
+    res.status(401);
+    throw new Error("Not authorized, no token");
+  }
 });
 
 // Admin middleware
 const admin = (req, res, next) => {
-    console.log(req.user);
-    if (req.user && req.user.isAdmin) {
-        next();
-    } else {
-        res.status(401);
-        throw new Error("Not authorized as an admin");
-    }
-
+    console.log("admin middlware", req.user)
+  if (req.user && req.user.isAdmin) {
+    next();
+  } else {
+    res.status(401);
+    throw new Error("Not authorized as an admin");
+  }
 };
 
 export { protect, admin };
